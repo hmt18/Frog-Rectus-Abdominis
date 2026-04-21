@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Pharmacology % Response Graph</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f4f6f9;
+    padding: 20px;
+}
+
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(135deg, #2c3e50, #3498db);
+    color: white;
+    text-align: center;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.header h1 {
+    margin: 0;
+    font-size: 26px;
+    letter-spacing: 1px;
+}
+
+.header p {
+    margin-top: 5px;
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+/* ===== CONTENT WRAPPER (OPTIONAL) ===== */
+.main-content {
+    flex: 1;
+}
+
+/* ===== FOOTER ===== */
+.footer {
+    margin-top: 20px;
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 14px;
+    line-height: 1.6;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.1);
+}
+
+.footer strong {
+    font-size: 15px;
+}
+
+/* ===== OPTIONAL: HOVER EFFECT ===== */
+.footer:hover {
+    background: #1a252f;
+    transition: 0.3s;
+}
+
+/* CARD UI */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+/* CENTER IMAGE */
+.image-container {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.graph {
+    width: 500px;
+    border-radius: 10px;
+}
+
+
+
+/* TABLE */
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th {
+    background: #2c3e50;
+    color: white;
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+/* INPUT */
+input {
+    width: 80px;
+    padding: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+/* BUTTON */
+button {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #2980b9;
+}
+
+canvas {
+    max-width: 900px;
+    margin-top: 20px;
+}
+
+/* PRINT*/
+@media print {
+
+    body {
+        background: white !important;
+    }
+
+    .header,
+    .footer,
+    .card {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    .header {
+        background: #2c3e50 !important;
+        color: white !important;
+    }
+
+    .footer {
+        background: #2c3e50 !important;
+        color: white !important;
+    }
+
+    th {
+        background: #2c3e50 !important;
+        color: white !important;
+    }
+}
+</style>
+</head>
+
+<body>
+    <header class="header">
+    <h1>Frog Rectus Abdominis Muscle Experiment</h1>
+    <p>Pharmacology Dose-Response Study</p>
+</header>
+
+<!-- IMAGE + TOOLTIP -->
+<div class="card">
+    <div class="image-container">
+        <img class="graph" src="graph1.png">
+    </div>
+</div>
+
+<!-- <h2>Maximum Response</h2>
+<input type="number" id="maxResponse" placeholder="Enter Max Response"> -->
+<div class="card">
+    <center>
+        <h2>Frog Rectus Observation</h2>
+    </center>
+
+<table id="dataTable">
+<tr>
+    <th rowspan="2">S.No</th>
+    <th rowspan="2">Conc. of ACh (μg/mL)</th>
+    
+    <th colspan="2">Amount Added in Organ Bath</th>
+    
+    <th rowspan="2">Conc of ACh in μg/mL<br>(Organ Bath = 20 mL)</th>
+    <th rowspan="2">Response (mm)</th>
+    <th rowspan="2">% Response</th>
+</tr>
+
+<tr>
+    <th>in mL</th>
+    <th>in μg</th>
+</tr>
+
+<tbody>
+
+<tr>
+<td>1</td>
+<td>100</td>
+<td>0.1</td>
+<td>10</td>
+<td>0.5</td>
+<td><div id="Response1"></div></td>
+<td><div id="%Response1"></div></td>
+</tr>
+
+<tr>
+<td>2</td>
+<td>100</td>
+<td>0.1</td>
+<td>10</td>
+<td>0.5</td>
+<td><div id="Response2"></div></td>
+<td><div id="%Response2"></div></td>
+</tr>
+
+<tr>
+<td>3</td>
+<td>100</td>
+<td>0.2</td>
+<td>20</td>
+<td>1</td>
+<td><div id="Response3"></div></td>
+<td><div id="%Response3"></div></td>
+</tr>
+
+<tr>
+<td>4</td>
+<td>100</td>
+<td>0.4</td>
+<td>40</td>
+<td>2</td>
+<td><div id="Response4"></div></td>
+<td><div id="%Response4"></div></td>
+</tr>
+
+<tr>
+<td>5</td>
+<td>100</td>
+<td>0.8</td>
+<td>80</td>
+<td>4</td>
+<td><div id="Response5"></div></td>
+<td><div id="%Response5"></div></td>
+</tr>
+
+<tr>
+<td>6</td>
+<td>100</td>
+<td>1.6</td>
+<td>160</td>
+<td>8</td>
+<td><div id="Response6"></div></td>
+<td><div id="%Response6">a</div></td>
+</tr>
+
+</tbody>
+</table>
+</div>
+
+<!-- MAX RESPONSE -->
+<div class="card">
+    <h3>Maximum Response</h3>
+    <div>
+        <label for="maxResponse" id="maxResponse"></label>
+    </div>
+</div>
+
+<button onclick="calculate()">Calculate & Plot</button>
+
+<h2>% Response Graph</h2>
+<canvas id="chart"></canvas>
+
+<section>
+    <button type="button"  id="Print" onclick="printDiv()">Print</button>
+</section>
+
+<footer class="footer">
+    <div>
+        <strong>RJPT Informatics Pvt. Ltd.</strong><br>
+        Medical Simulation Software Company<br>
+        Raipur, Chhattisgarh, India<br><br>
+
+        Email: support@rjptsimlab.com | Phone: +91-9131483718<br>
+        © 2026 All Rights Reserved
+    </div>
+</footer>
+
+<script>
+let chart;
+
+function getQueryParams() {
+    const params = {};
+    const queryString = window.location.search.substring(1);
+    const vars = queryString.split("&");
+
+    for (let i = 0; i < vars.length; i++) {
+        const pair = vars[i].split("=");
+        params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+    }
+
+    return params;
+}
+
+function calculateAndFill() {
+
+    const data = getQueryParams();
+
+    let maxResponse = parseFloat(data.maxR) || 0;
+
+    if (maxResponse === 0) {
+        alert("Max Response not received from Unity");
+        return;
+    }
+
+    // ✅ STATIC X VALUES
+    let x = [0.5, 0.5, 1, 2, 4, 8];
+
+    // ✅ RESPONSES FROM UNITY
+    let responses = [
+        parseFloat(data.r1) || 0,
+        parseFloat(data.r2) || 0,
+        parseFloat(data.r3) || 0,
+        parseFloat(data.r4) || 0,
+        parseFloat(data.r5) || 0,
+        parseFloat(data.r6) || 0
+    ];
+
+    let y = [];
+
+    responses.forEach((res, i) => {
+
+        // ✅ Fill RESPONSE column
+        document.getElementById("Response" + (i + 1)).innerText = res;
+
+        // ✅ Calculate %Response
+        let percent = (res / maxResponse) * 100;
+
+        // ✅ Fill %Response column
+        document.getElementById("%Response" + (i + 1)).innerText = percent.toFixed(2);
+
+        y.push(percent);
+    });
+
+    // ✅ Show Max Response
+    document.getElementById("maxResponse").innerText = maxResponse;
+
+    // ✅ Plot graph
+    plotGraph(x, y);
+}
+
+function plotGraph(x, y) {
+    if (chart) chart.destroy();
+
+    chart = new Chart(document.getElementById("chart"), {
+        type: 'line',
+        data: {
+            datasets: [{
+                label: "% Response",
+                data: x.map((val, i) => ({ x: val, y: y[i] })),
+                tension: 0.4,
+                borderWidth: 2,
+                pointRadius: 4
+            }]
+        },
+        options: {
+            scales: {
+                x: {
+                    type: 'linear',
+                    min: 0,
+                    max: 9,
+                    ticks: { stepSize: 1 },
+                    title: {
+                        display: true,
+                        text: "Conc. of ACh in μg/mL (in organ bath contains 20 ml solution)",
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                },
+                y: {
+                    min: 0,
+                    max: 120,
+                    ticks: { stepSize: 20 },
+                    title: {
+                        display: true,
+                        text: "% Response",
+                        font: {
+                            size: 14,
+                            weight: 'bold'
+                        }
+                    }
+                }
+            }
+        }
+    });
+}
+
+// ✅ AUTO RUN WHEN PAGE LOADS
+window.onload = calculateAndFill;
+
+function printDiv() {
+    window.print();
+}
+</script>
+
+<!-- SCRIPT REMAINS 100% SAME -->
+<script>
+    function getQueryParams() {
+        const params = {};
+        const queryString = window.location.search.substring(1);
+        const vars = queryString.split("&");
+        for (let i = 0; i < vars.length; i++) {
+            const pair = vars[i].split("=");
+            params[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || "");
+        }
+        return params;
+    }
+
+    const data = getQueryParams();
+    document.getElementById("Response1").innerText = data.r1;
+    document.getElementById("Response2").innerText = data.r2;
+    document.getElementById("Response3").innerText = data.r3;
+    document.getElementById("Response4").innerText = data.r4;
+    document.getElementById("Response5").innerText = data.r5;
+    document.getElementById("Response6").innerText = data.r6;
+    document.getElementById("%Response1").innerText = data.R1;
+    document.getElementById("%Response2").innerText = data.R2;
+    document.getElementById("%Response3").innerText = data.R3;
+    document.getElementById("%Response4").innerText = data.R4;
+    document.getElementById("%Response5").innerText = data.R5;
+    document.getElementById("%Response6").innerText = data.R6;
+    document.getElementById("maxResponse").innerText = data.maxR;
+
+    function printDiv() {
+        window.print();
+    }
+</script>
+
+</body>
+</html>
